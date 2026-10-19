@@ -1,0 +1,67 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Set Android SDK env
+        run: |
+          echo "ANDROID_HOME=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=/usr/local/lib/android/sdk" >> $GITHUB_ENV
+
+      - name: Install SDK packages
+        run: |
+          set -e
+          SDK=/usr/local/lib/android/sdk
+          SM=$(find "$SDK/cmdline-tools" -type f -name sdkmanager 2>/dev/null | head -1)
+          if [ -z "$SM" ]; then
+            echo "sdkmanager not found"; ls -la "$SDK" || true; exit 1
+          fi
+          yes | "$SM" --licenses >/tmp/licenses.txt 2>&1 || true
+          "$SM" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Show project layout
+        run: |
+          ls -la
+          ls -la PlanoraAI || true
+          find . -name "gradlew" -o -name "build.gradle.kts" 2>/dev/null | head -40
+
+      - name: Ensure Gradle Wrapper
+        working-directory: PlanoraAI
+        run: |
+          if [ -f ./gradlew ]; then
+            chmod +x ./gradlew
+          else
+            curl -sL "https://services.gradle.org/distributions/gradle-8.9-bin.zip" -o /tmp/gradle-8.9-bin.zip
+            unzip -q /tmp/gradle-8.9-bin.zip -d /tmp
+            /tmp/gradle-8.9/bin/gradle wrapper --gradle-version 8.9
+            chmod +x ./gradlew
+          fi
+
+      - name: Build Debug APK
+        working-directory: PlanoraAI
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlanoraAI-debug
+          path: PlanoraAI/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
