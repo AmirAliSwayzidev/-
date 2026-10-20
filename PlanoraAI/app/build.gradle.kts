@@ -67,6 +67,7 @@ dependencies {
     // Core Android
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-process:2.8.7")
     implementation("androidx.activity:activity-compose:1.9.3")
 
     // Compose BOM
@@ -108,14 +109,14 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
-    // Accompanist for permissions, system UI, etc.
+    // Accompanist
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
 
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    // Persian date support (optional helper)
+    // Persian date
     implementation("com.github.samanzamani:PersianDate:1.7.1")
 
     // Testing
