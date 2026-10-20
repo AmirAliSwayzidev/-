@@ -50,8 +50,7 @@ fun ChatScreen(
             api = null, // Configure Retrofit when backend is ready
             chatDao = database.chatDao(),
             
-            context = context,
-            baseUrlConfigured = false
+            context = context
         )
     }
 
