@@ -120,7 +120,7 @@ ${existingTasksSummary?.let { "کارهای فعلی: $it" } ?: ""}"""
                     ChatResponse(
                         message = content,
                         conversationId = convId,
-                        plan = null
+                        structuredPlan = null
                     )
                 )
             },
